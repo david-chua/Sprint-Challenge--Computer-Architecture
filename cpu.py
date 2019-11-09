@@ -15,6 +15,12 @@ CMP  = 0b10100111
 JMP  = 0b01010100
 JEQ  = 0b01010101
 JNE  = 0b01010110
+AND  = 0b10101000
+OR   = 0b10101010
+XOR  = 0b10101011
+NOT  = 0b01101001
+SHL  = 0b10101100
+SHR  = 0b10101101
 
 class CPU:
     """Main CPU class."""
@@ -41,7 +47,13 @@ class CPU:
             CMP: self.cmp,
             JMP: self.jmp,
             JEQ: self.jeq,
-            JNE: self.jne
+            JNE: self.jne,
+            AND: self.and,
+            OR:  self.or,
+            XOR: self.xor,
+            NOT: self.not,
+            SHL: self.shl,
+            shr: self.shr
         }
 
     def load(self, filename):
@@ -68,6 +80,20 @@ class CPU:
             first_num = self.reg[reg_a]
             second_num = self.reg[reg_b]
             self.reg[reg_a] = first_num * second_num
+        elif op == "AND":
+            self.reg[reg_a] = self.reg[reg_a] & self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] = self.reg[reg_a] | self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] = self.reg[reg_a] ^ self.reg[reg_b]
+        elif op == "NOT":
+            self.reg[reg_a] = ~self.reg[reg_a]
+        elif op == "SHL":
+            value_to_shift = self.reg[reg_b]
+            self.reg[reg_a] = self.reg[reg_a] << value_to_shift
+        elif op == "SHR":
+            value_to_shift = self.reg[reg_b]
+            self.reg[reg_a] = self.reg[reg_a] >> value_to_shift
         #elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
@@ -113,6 +139,24 @@ class CPU:
 
     def mul(self, op_a, op_b):
         self.alu('MUL', op_a, op_b)
+
+    def and(self, reg_a, reg_b):
+        self.alu('AND', reg_a, reg_b)
+
+    def or(self, reg_a, reg_b):
+        self.alu('OR', reg_a, reg_b)
+
+    def xor(self, reg_a, reg_b):
+        self.alu('XOR', reg_a, reg_b)
+
+    def not(self, reg_a, reg_b):
+        self.alu('NOT', reg_a, reg_b)
+
+    def shl(self, reg_a, reg_b):
+        self.alu('SHL', reg_a, reg_b)
+
+    def shr(self, reg_a, reg_b):
+        self.alu('SHR', reg_a, reg_b)
 
     def push(self, op_a, op_b):
         self.reg[7] -= 1
