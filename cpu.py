@@ -11,6 +11,10 @@ PUSH = 0b01000101
 POP  = 0b01000110
 RET  = 0b00010001
 CALL = 0b01010000
+CMP  = 0b10100111
+JMP  = 0b01010100
+JEQ  = 0b01010101
+JNE  = 0b01010110
 
 class CPU:
     """Main CPU class."""
@@ -22,6 +26,7 @@ class CPU:
         self.pc = 0
         self.reg[7] = 0xF4
         self.running = True
+        self.flag = 0b00000000
 
         self.branchtable = {
             LDI: self.ldi,
@@ -32,7 +37,11 @@ class CPU:
             POP: self.pop,
             CALL: self.call,
             RET: self.ret,
-            ADD: self.add
+            ADD: self.add,
+            CMP: self.cmp,
+            JMP: self.jmp,
+            JEQ: self.jeq,
+            JNE: self.jne
         }
 
     def load(self, filename):
@@ -137,6 +146,48 @@ class CPU:
 
         self.pc = return_address
 
+    def cmp(self, reg_a, reg_b):
+        #compare the values in two registers
+        #if equal: set E flag to 1 otherwise, set it to 0
+        # if regA is less, set L flag to 1, otherwise, set it to 0
+        # if regB is greater, selt G flag to 1, otherwise set it to 0
+        reg_value1 = self.reg[reg_a]
+        reg_value2 = self.reg[reg_b]
+        #00000LGE
+        if reg_value1 == reg_value2:
+            # set the E flag to 1 or 0
+            self.flag = self.flag | 0b00000001
+        else:
+            self.flag = self.flag & 0b11111110
+            #set the L flag to 1 or 0
+        if reg_value1 < reg_value2:
+            self.flag = self.flag | 0b00000100
+        else:
+            self.flag = self.flag & 0b11111011
+
+        if reg_value1 > reg_value2:
+            self.flag = self.flag | 0b00000010
+        else:
+            self.flag = self.flag & 0b11111101
+
+    def jmp(self, reg_a, reg_b):
+        address_value = self.reg[reg_a]
+        self.pc = address_value
+
+    def jeq(self, reg_a, reg_b):
+        E_flag = self.flag & 0b00000001
+        if E_flag == 1:
+            self.jmp(reg_a, reg_b)
+        else:
+            self.pc += 2
+
+    def jne(self, reg_a, reg_b):
+        #if E flag is 0, jump to address stored in register
+        E_flag = self.flag & 0b00000001
+        if E_flag == 0:
+            self.jmp(reg_a, reg_b)
+        else:
+            self.pc += 2
 
     def run(self):
         """Run the CPU."""
