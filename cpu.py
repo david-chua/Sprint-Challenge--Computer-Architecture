@@ -48,12 +48,12 @@ class CPU:
             JMP: self.jmp,
             JEQ: self.jeq,
             JNE: self.jne,
-            AND: self.and,
-            OR:  self.or,
-            XOR: self.xor,
-            NOT: self.not,
-            SHL: self.shl,
-            shr: self.shr
+            AND: self.and_type,
+            OR:  self.or_type,
+            XOR: self.xor_type,
+            NOT: self.not_type,
+            SHL: self.shl_type,
+            SHR: self.shr_type
         }
 
     def load(self, filename):
@@ -140,22 +140,22 @@ class CPU:
     def mul(self, op_a, op_b):
         self.alu('MUL', op_a, op_b)
 
-    def and(self, reg_a, reg_b):
+    def and_type(self, reg_a, reg_b):
         self.alu('AND', reg_a, reg_b)
 
-    def or(self, reg_a, reg_b):
+    def or_type(self, reg_a, reg_b):
         self.alu('OR', reg_a, reg_b)
 
-    def xor(self, reg_a, reg_b):
+    def xor_type(self, reg_a, reg_b):
         self.alu('XOR', reg_a, reg_b)
 
-    def not(self, reg_a, reg_b):
+    def not_type(self, reg_a, reg_b):
         self.alu('NOT', reg_a, reg_b)
 
-    def shl(self, reg_a, reg_b):
+    def shl_type(self, reg_a, reg_b):
         self.alu('SHL', reg_a, reg_b)
 
-    def shr(self, reg_a, reg_b):
+    def shr_type(self, reg_a, reg_b):
         self.alu('SHR', reg_a, reg_b)
 
     def push(self, op_a, op_b):
